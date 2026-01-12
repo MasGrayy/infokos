@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Info Kos Kudus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+    <h1>🏠 Info Kos Kudus</h1>
+    <p>Cari kos nyaman & tersedia</p>
+</header>
+
+<section class="filter">
+    <input type="text" id="search" placeholder="Cari nama atau lokasi kos">
+    <select id="harga">
+        <option value="all">Semua Harga</option>
+        <option value="murah">&lt; Rp 500.000</option>
+        <option value="sedang">Rp 500.000 - 1.000.000</option>
+        <option value="mahal">&gt; Rp 1.000.000</option>
+    </select>
+    <select id="tipe">
+        <option value="all">Semua Tipe</option>
+        <option value="putra">Putra</option>
+        <option value="putri">Putri</option>
+        <option value="campur">Campur</option>
+    </select>
+</section>
+
+<main class="kos-list" id="kosList">
+
+    <div class="kos-card" data-id="1" data-harga="sedang" data-tipe="putri">
+        <span class="fav">♡</span>
+
+        <div class="foto-kos">
+            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2" onclick="openFoto(this)">
+            <img src="https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf" onclick="openFoto(this)">
+        </div>
+
+        <h3>Kos Melati Putih</h3>
+        <p class="lokasi">📍 Jl. Mlatiharjo, Kudus</p>
+        <p class="tipe">👥 Kos Putri</p>
+        <span class="harga">Rp 750.000 / bulan</span>
+
+        <a class="wa" target="_blank"
+           href="https://wa.me/+6285926377355?text=Saya%20tertarik%20dengan%20Kos%20Melati%20Putih">
+           Hubungi WhatsApp
+        </a>
+    </div>
+
+    <div class="kos-card" data-id="2" data-harga="murah" data-tipe="putra">
+        <span class="fav">♡</span>
+
+        <div class="foto-kos">
+            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267" onclick="openFoto(this)">
+            <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb" onclick="openFoto(this)">
+        </div>
+
+        <h3>Kos Sejahtera</h3>
+        <p class="lokasi">📍 Jl. Sunan Kudus</p>
+        <p class="tipe">👥 Kos Putra</p>
+        <span class="harga">Rp 450.000 / bulan</span>
+
+        <a class="wa" target="_blank"
+           href="https://wa.me/+6285926377355?text=Saya%20tertarik%20dengan%20Kos%20Sejahtera">
+           Hubungi WhatsApp
+        </a>
+    </div>
+
+</main>
+
+<!-- FULLSCREEN FOTO -->
+<div class="foto-modal" id="fotoModal" onclick="closeFoto()">
+    <img id="fotoFull">
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <button onclick="showAll()" class="active">🏠 Home</button>
+    <button onclick="showFavorit()">❤️ Favorit</button>
+</nav>
+
+<footer class="footer">
+    <p>© 2026 Info Kos Kudus</p>
+</footer>
+
+<script>
+const search = document.getElementById("search");
+const harga = document.getElementById("harga");
+const tipe = document.getElementById("tipe");
+const cards = document.querySelectorAll(".kos-card");
+const favs = document.querySelectorAll(".fav");
+const modal = document.getElementById("fotoModal");
+const fotoFull = document.getElementById("fotoFull");
+
+let favorit = JSON.parse(localStorage.getItem("favoritKos")) || [];
+
+function filterKos() {
+    const s = search.value.toLowerCase();
+    const h = harga.value;
+    const t = tipe.value;
+
+    cards.forEach(card => {
+        const show =
+            card.innerText.toLowerCase().includes(s) &&
+            (h === "all" || card.dataset.harga === h) &&
+            (t === "all" || card.dataset.tipe === t);
+
+        card.style.display = show ? "block" : "none";
+    });
+}
+
+favs.forEach(fav => {
+    const id = fav.parentElement.dataset.id;
+    if (favorit.includes(id)) {
+        fav.textContent = "♥";
+        fav.classList.add("active");
+    }
+    fav.onclick = () => {
+        if (favorit.includes(id)) {
+            favorit = favorit.filter(x => x !== id);
+            fav.textContent = "♡";
+            fav.classList.remove("active");
+        } else {
+            favorit.push(id);
+            fav.textContent = "♥";
+            fav.classList.add("active");
+        }
+        localStorage.setItem("favoritKos", JSON.stringify(favorit));
+    };
+});
+
+function showFavorit() {
+    cards.forEach(card => {
+        card.style.display = favorit.includes(card.dataset.id) ? "block" : "none";
+    });
+}
+
+function showAll() {
+    cards.forEach(card => card.style.display = "block");
+}
+
+function openFoto(img) {
+    fotoFull.src = img.src;
+    modal.style.display = "flex";
+}
+
+function closeFoto() {
+    modal.style.display = "none";
+}
+
+search.oninput = filterKos;
+harga.onchange = filterKos;
+tipe.onchange = filterKos;
+</script>
+
+</body>
+</html>
